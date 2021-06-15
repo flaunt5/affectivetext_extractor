@@ -1,6 +1,7 @@
 .venv
 venv
 .vscode
+.devcontainer
 *.csv
 *.jsonl
 *.gold

@@ -2,6 +2,7 @@ import os
 import sys
 import csv
 import random
+import copy
 from geotext import GeoText
 from nltk.tag import pos_tag
 import xml.etree.ElementTree as ET
@@ -25,7 +26,7 @@ emotions = os.path.join(TARGETDIR, 'affectivetext_%s.emotions.gold' % text_choic
 valence = os.path.join(TARGETDIR, 'affectivetext_%s.valence.gold' % text_choice)
 
 def GetEmotion(row):
-    slice = row
+    slice = copy.deepcopy(row)
     slice.pop("text")
     slice.pop("surprise")
     slice.pop("valence")
@@ -84,35 +85,34 @@ candidates = {"anger": list(), "disgust": list(), "fear": list(), "joy": list(),
 for val in values:
     slice = values[val]
     text = slice['text']
-    places = GeoText(text)
-    print(places)
-#     em = GetEmotion(slice)
-#     if em is not False:
-#         candidates[em].append(slice)
+    em = GetEmotion(slice)
+    print(slice)
+    if em is not False:
+        candidates[em].append(slice)
 
-# joy_candidates_two = list()
-# for joy in candidates['joy']:
-#     if joy['joy'] > 50:
-#         joy_candidates_two.append(joy)
+joy_candidates_two = list()
+for joy in candidates['joy']:
+    if joy['joy'] > 50:
+        joy_candidates_two.append(joy)
 
-# candidates['joy'] = joy_candidates_two
+candidates['joy'] = joy_candidates_two
 
-# sadness_candidates_two = list()
-# for sadness in candidates['sadness']:
-#     if sadness['sadness'] > 50:
-#         sadness_candidates_two.append(sadness)
+sadness_candidates_two = list()
+for sadness in candidates['sadness']:
+    if sadness['sadness'] > 50:
+        sadness_candidates_two.append(sadness)
 
-# candidates['sadness'] = sadness_candidates_two
+candidates['sadness'] = sadness_candidates_two
 
-# neutral_candidates_two = list()
-# for neutral in candidates['neutral']:
-#     if neutral['anger'] < 5 and neutral['disgust'] < 5 and neutral['fear'] < 5 and neutral['joy'] < 5 and neutral['sadness'] < 5:
-#         neutral_candidates_two.append(neutral)
+neutral_candidates_two = list()
+for neutral in candidates['neutral']:
+    if neutral['anger'] < 5 and neutral['disgust'] < 5 and neutral['fear'] < 5 and neutral['joy'] < 5 and neutral['sadness'] < 5:
+        neutral_candidates_two.append(neutral)
 
-# candidates['neutral'] = neutral_candidates_two
+candidates['neutral'] = neutral_candidates_two
 
-# for can in candidates:
-#     candidates[can] = GetRandomSample(candidates[can])
-#     for line in candidates[can]:
-#         data_to_write = [can] + list(line.values())
-#         writer.writerow(data_to_write)
+for can in candidates:
+    candidates[can] = GetRandomSample(candidates[can])
+    for line in candidates[can]:
+        data_to_write = [can] + list(line.values())
+        writer.writerow(data_to_write)
